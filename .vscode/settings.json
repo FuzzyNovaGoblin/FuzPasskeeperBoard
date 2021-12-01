@@ -1,0 +1,6 @@
+{
+   "files.associations": {
+      "config": "editorconfig",
+      "iosfwd": "cpp"
+   }
+}
