@@ -15,7 +15,14 @@ class ItemPage extends StatelessWidget {
         children: [
           FieldDisplay(name: "Username", text: data['login']['username']),
           FieldDisplay(name: "Password", hidden: true, text: data['login']['password']),
-          ...data['fields'].map((d) => FieldDisplay(name: d['name'], text: d['value'], hidden: d['type'] == 1,)).toList(),
+          if (data['fields'] != null)
+            ...data['fields']
+                .map((d) => FieldDisplay(
+                      name: d['name'],
+                      text: d['value'],
+                      hidden: d['type'] == 1,
+                    ))
+                .toList(),
         ],
       ),
     );
