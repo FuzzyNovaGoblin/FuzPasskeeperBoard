@@ -20,30 +20,13 @@ void loop()
 {
   asciiByte = getAsciiByte();
   Keyboard.print(asciiByte);
-  // Serial.print("val: ");
-  // Serial.println(val);
-
-  // delay(1000);
-  // if (!done)
-  // {
-  //   done = true;
-  //   // Keyboard.press(97);
-  //   delay(100);
-  //   // Keyboard.release(97);
-  //   Keyboard.print("a");
-  // }
-  // if(val != 0){
-  //   Keyboard.print("a");
-  // }
 }
 
 char getAsciiByte()
 {
-  Serial.println("getAsciiByte");
   char retByte = 0;
   for (int i = 0; i < 8; i++)
   {
-    Serial.println((int)retByte);
     while (digitalRead(activePin) == LOW)
     {
       delay(1);
