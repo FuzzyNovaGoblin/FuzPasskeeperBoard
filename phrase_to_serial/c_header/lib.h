@@ -4,4 +4,7 @@
 #include <ostream>
 #include <new>
 
-const char *get_bw_data(const char *session_key);
+
+void string_to_serial(const char *data);
+
+const char *get_bw_data();

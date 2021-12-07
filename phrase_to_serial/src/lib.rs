@@ -1,15 +1,16 @@
 mod c_bridge;
 
 use std::{
+    ffi::CString,
     fs::{self, File},
     io::Write,
+    os::raw::c_char,
     process::Command,
     thread,
-    time::Duration, ffi::CString, os::raw::c_char
+    time::Duration,
 };
 
 use c_bridge::const_u8_to_string;
-
 
 fn toggle_active() {
     let mut file = File::create("/sys/class/gpio/gpio6/value").unwrap();
@@ -34,7 +35,9 @@ fn send_char(mut c: u8) {
     }
 }
 
-pub fn string_to_serial(data: String) {
+#[no_mangle]
+pub extern "C" fn string_to_serial(data: *const c_char) {
+    let data = const_u8_to_string(data);
     for c in data.chars() {
         send_char(c as u8);
     }
@@ -61,18 +64,25 @@ pub fn get_session_key() -> String {
 }
 const BW_FILE_PATH: &str = "/home/pi/bwdata.json";
 
-#[no_mangle]
-pub extern "C" fn get_bw_data(session_key: *const c_char) -> *const c_char {
-    let session_key =const_u8_to_string(session_key);
+pub fn get_data_from_key(session_key: String) -> String {
     if session_key != "" {
         let output = Command::new("bw")
-            .arg("list").arg("items").arg("--session").arg(session_key)
+            .arg("list")
+            .arg("items")
+            .arg("--session")
+            .arg(session_key)
             .output()
             .expect("failed to get bitwarden data");
-            dbg!(&output);
+        dbg!(&output);
         let mut file = File::create(BW_FILE_PATH).expect("failed to create file");
         file.write_all(&output.stdout).unwrap();
     }
+    fs::read_to_string(BW_FILE_PATH).unwrap()
+}
 
-    CString::new(fs::read_to_string(BW_FILE_PATH).unwrap()).unwrap().into_raw()
+#[no_mangle]
+pub extern "C" fn get_bw_data() -> *const c_char {
+    CString::new(get_data_from_key(get_session_key()))
+        .unwrap()
+        .into_raw()
 }

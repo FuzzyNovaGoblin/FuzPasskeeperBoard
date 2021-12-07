@@ -1,0 +1,11 @@
+name: phrase_to_serial
+
+output: 'lib/ffi/genphrase_to_serial.dart'
+
+headers:
+  entry-points:
+   - 'c_header/lib.h'
+
+comments:
+  style: any
+  length: full
