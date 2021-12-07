@@ -1,10 +1,15 @@
+mod c_bridge;
+
 use std::{
     fs::{self, File},
     io::Write,
     process::Command,
     thread,
-    time::Duration,
+    time::Duration, ffi::CString, os::raw::c_char
 };
+
+use c_bridge::const_u8_to_string;
+
 
 fn toggle_active() {
     let mut file = File::create("/sys/class/gpio/gpio6/value").unwrap();
@@ -56,7 +61,9 @@ pub fn get_session_key() -> String {
 }
 const BW_FILE_PATH: &str = "/home/pi/bwdata.json";
 
-pub fn get_bw_data(session_key: String) -> String {
+#[no_mangle]
+pub extern "C" fn get_bw_data(session_key: *const c_char) -> *const c_char {
+    let session_key =const_u8_to_string(session_key);
     if session_key != "" {
         let output = Command::new("bw")
             .arg("list").arg("items").arg("--session").arg(session_key)
@@ -66,5 +73,6 @@ pub fn get_bw_data(session_key: String) -> String {
         let mut file = File::create(BW_FILE_PATH).expect("failed to create file");
         file.write_all(&output.stdout).unwrap();
     }
-    fs::read_to_string(BW_FILE_PATH).unwrap()
+
+    CString::new(fs::read_to_string(BW_FILE_PATH).unwrap()).unwrap().into_raw()
 }
