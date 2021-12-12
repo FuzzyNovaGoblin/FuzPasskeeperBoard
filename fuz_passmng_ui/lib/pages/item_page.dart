@@ -13,8 +13,8 @@ class ItemPage extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          FieldDisplay(name: "Username", text: data['login']['username']),
-          FieldDisplay(name: "Password", hidden: true, text: data['login']['password']),
+          if (data['login']['username'] != null) FieldDisplay(name: "Username", text: data['login']['username']),
+          if (data['login']['password'] != null) FieldDisplay(name: "Password", hidden: true, text: data['login']['password']),
           if (data['fields'] != null)
             ...data['fields']
                 .map((d) => FieldDisplay(
