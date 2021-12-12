@@ -27,18 +27,24 @@ char getAsciiByte()
   char retByte = 0;
   for (int i = 0; i < 8; i++)
   {
-      asm(
-      "p5loop_start:\n"
-      "sbis %0, %1\n"
-      "jmp p5loop_start" ::"I"(_SFR_IO_ADDR(PINC)),
-      "I"(PINC6));
-    retByte = retByte << 1;
+    asm(
+        "p5loop_start:\n"
+        "sbis %0, %1\n"
+        "jmp p5loop_start" ::"I"(_SFR_IO_ADDR(PINC)),
+        "I"(PINC6));
+    asm("LSL %0\n"
+        "mov %1, %0\n"
+        : "=r"(retByte)
+        : "r"(retByte));
     asm(
         "sbis %0, %1\n"
-        "jmp after_bit_set\n"
-         ::"I"(_SFR_IO_ADDR(PIND)),
+        "jmp after_bit_set\n" ::"I"(_SFR_IO_ADDR(PIND)),
         "I"(PIND7));
-    retByte = retByte | 1;
+    asm("ori %0, 0x1\n"
+        "mov %1, %0\n"
+        : "=r"(retByte)
+        : "r"(retByte));
+
     asm("after_bit_set:\n");
 
     asm(
@@ -47,5 +53,6 @@ char getAsciiByte()
         "jmp p5loop_end" ::"I"(_SFR_IO_ADDR(PINC)),
         "I"(PINC6));
   }
+
   return retByte;
 }
