@@ -13,21 +13,21 @@ use std::{
 use c_bridge::const_u8_to_string;
 
 fn toggle_active() {
-    let mut file = File::create("/sys/class/gpio/gpio6/value").unwrap();
-    write!(&mut file, "1").unwrap();
+    let mut file = File::create("/sys/class/gpio/gpio6/value").expect("failed to open gpio6 file");
+    write!(&mut file, "1").expect("failed to write 1");
     thread::sleep(Duration::from_millis(1));
-    write!(&mut file, "0").unwrap();
+    write!(&mut file, "0").expect("failed to write 0");
     thread::sleep(Duration::from_millis(1));
 }
 
 fn send_char(mut c: u8) {
     for _ in 0..8 {
         {
-            let mut file = File::create("/sys/class/gpio/gpio5/value").unwrap();
+            let mut file = File::create("/sys/class/gpio/gpio5/value").expect("failed to open gpio5 file");
             if (c & 128) != 0 {
-                write!(&mut file, "1").unwrap();
+                write!(&mut file, "1").expect("failed to write 1");
             } else {
-                write!(&mut file, "0").unwrap();
+                write!(&mut file, "0").expect("failed to write 0");
             }
         }
         toggle_active();
