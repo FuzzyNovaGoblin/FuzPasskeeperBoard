@@ -33,10 +33,14 @@ char getAsciiByte()
       "jmp p5loop_start" ::"I"(_SFR_IO_ADDR(PINC)),
       "I"(PINC6));
     retByte = retByte << 1;
-    if (digitalRead(dataPin) == HIGH)
-    {
-      retByte = retByte | 1;
-    }
+    asm(
+        "sbis %0, %1\n"
+        "jmp after_bit_set\n"
+         ::"I"(_SFR_IO_ADDR(PIND)),
+        "I"(PIND7));
+    retByte = retByte | 1;
+    asm("after_bit_set:\n");
+
     asm(
         "p5loop_end:\n"
         "sbic %0, %1\n"
