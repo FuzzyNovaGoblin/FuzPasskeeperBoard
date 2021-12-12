@@ -73,7 +73,6 @@ pub fn get_data_from_key(session_key: String) -> String {
             .arg(session_key)
             .output()
             .expect("failed to get bitwarden data");
-        dbg!(&output);
         let mut file = File::create(BW_FILE_PATH).expect("failed to create file");
         file.write_all(&output.stdout).unwrap();
     }
