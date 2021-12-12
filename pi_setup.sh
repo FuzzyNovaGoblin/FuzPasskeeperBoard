@@ -10,5 +10,4 @@ sudo echo "0" > gpio5/value
 sudo echo "0" > gpio6/value
 
 cd /home/pi
-su pi
-flutter-pi flutter_bundle
+sudo -u pi flutter-pi flutter_bundle
