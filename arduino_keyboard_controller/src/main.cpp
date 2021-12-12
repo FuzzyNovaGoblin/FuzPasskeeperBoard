@@ -27,19 +27,21 @@ char getAsciiByte()
   char retByte = 0;
   for (int i = 0; i < 8; i++)
   {
-    while (digitalRead(activePin) == LOW)
-    {
-      delay(1);
-    }
+      asm(
+      "p5loop_start:\n"
+      "sbis %0, %1\n"
+      "jmp p5loop_start" ::"I"(_SFR_IO_ADDR(PINC)),
+      "I"(PINC6));
     retByte = retByte << 1;
     if (digitalRead(dataPin) == HIGH)
     {
       retByte = retByte | 1;
     }
-    while (digitalRead(activePin) == HIGH)
-    {
-      delay(1);
-    }
+    asm(
+        "p5loop_end:\n"
+        "sbic %0, %1\n"
+        "jmp p5loop_end" ::"I"(_SFR_IO_ADDR(PINC)),
+        "I"(PINC6));
   }
   return retByte;
 }
